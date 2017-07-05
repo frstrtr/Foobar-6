@@ -144,7 +144,7 @@ def compare_col_state(ary_1, ary_2 ):
 
 def find_col_preimage(col):
     col_preimage = col[0]
-    if len(col) == 2:
+    if len(col) == 1:
         return col[0]
     for i in xrange(len(col) - 1):
         col_preimage = compare_col_state(col_preimage, col[i+1])
@@ -264,20 +264,20 @@ class TestExpandingNebula(unittest.TestCase):
 #                 [True, False, True]
 #               ]
 
-simple = [[1, 1, 1, 1],
-          [1, 1, 1, 1],
-          [1, 1, 1, 1],
-          [1, 1, 1, 1]]
+simple = [[1, 1, 1, 1]]
 
 zero_arry = []
-for i in xrange(1):
+for i in xrange(25):
     zero_arry.append([])
-    for j in xrange(7):
+    for j in xrange(1):
         zero_arry[i].append(0)
 
 test_arry = generate_binary_arry(25, 1)
 
-print(answer(test_arry))
+# col_states = find_col_states(zero_arry)
+# print len(find_col_preimage(col_states[0]))
+
+print(answer(simple))
 
 
 
