@@ -65,7 +65,7 @@
     Output:
         (int) 11567
 """
-import unittest
+# import unittest
 import random
 import itertools
 
@@ -276,7 +276,7 @@ for i in xrange(9):
 one_arry = []
 for i in xrange(9):
     one_arry.append([])
-    for j in xrange(50):
+    for j in xrange(25):
         one_arry[i].append(1)
 
 test_arry = generate_binary_arry(9, 10)
