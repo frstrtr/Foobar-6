@@ -22,6 +22,9 @@ Output:
 """
 
 
+import unittest
+
+
 def answer(s):
     CYPHER_DICT = {"a": "z", "b": "y", "c": "x", "d": "w",
                    "e": "v", "f": "u", "g": "t", "h": "s", "i": "r",
@@ -40,3 +43,16 @@ def answer(s):
             decrypted_str += c
 
     return decrypted_str
+
+
+class TestILoveLanceJanice(unittest.TestCase):
+    def test_1(self):
+        test_input = "wrw blf hvv ozhg mrtsg'h vkrhlwv?"
+        self.assertEqual(answer(test_input), "did you see last night's episode?")
+
+    def test_2(self):
+        test_input = "Yvzs! I xzm'g yvorvev Lzmxv olhg srh qly zg gsv xlolmb!!"
+        self.assertEqual(answer(test_input), "Yeah! I can't believe Lance lost his job at the colony!!")
+
+print(answer("ghdfhg"))
+

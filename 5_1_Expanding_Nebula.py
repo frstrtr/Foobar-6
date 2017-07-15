@@ -65,7 +65,7 @@
     Output:
         (int) 11567
 """
-# import unittest
+import unittest
 import random
 import itertools
 
@@ -216,33 +216,33 @@ def generate_binary_arry(height, width):
 
 
 
-# class TestExpandingNebula(unittest.TestCase):
-#     def test1(self):
-#         test_input = [
-#                         [True, True, False, True, False, True, False, True, True, False],
-#                         [True, True, False, False, False, False, True, True, True, False],
-#                         [True, True, False, False, False, False, False, False, False, True],
-#                         [False, True, False, False, False, False, True, True, False, False]
-#                       ]
-#         self.assertEqual(answer(test_input), 11567)
-#
-#     def test2(self):
-#         test_input = [
-#                         [True, False, True, False, False, True, True, True],
-#                         [True, False, True, False, False, False, True, False],
-#                         [True, True, True, False, False, False, True, False],
-#                         [True, False, True, False, False, False, True, False],
-#                         [True, False, True, False, False, True, True, True]
-#                       ]
-#         self.assertEqual(answer(test_input), 254)
-#
-#     def test3(self):
-#         test_input = [
-#                         [True, False, True],
-#                         [False, True, False],
-#                         [True, False, True]
-#                       ]
-#         self.assertEqual(answer(test_input), 4)
+class TestExpandingNebula(unittest.TestCase):
+    def test1(self):
+        test_input = [
+                        [True, True, False, True, False, True, False, True, True, False],
+                        [True, True, False, False, False, False, True, True, True, False],
+                        [True, True, False, False, False, False, False, False, False, True],
+                        [False, True, False, False, False, False, True, True, False, False]
+                      ]
+        self.assertEqual(answer(test_input), 11567)
+
+    def test2(self):
+        test_input = [
+                        [True, False, True, False, False, True, True, True],
+                        [True, False, True, False, False, False, True, False],
+                        [True, True, True, False, False, False, True, False],
+                        [True, False, True, False, False, False, True, False],
+                        [True, False, True, False, False, True, True, True]
+                      ]
+        self.assertEqual(answer(test_input), 254)
+
+    def test3(self):
+        test_input = [
+                        [True, False, True],
+                        [False, True, False],
+                        [True, False, True]
+                      ]
+        self.assertEqual(answer(test_input), 4)
 
 
 cell_1 = [[1, 0, 1],
