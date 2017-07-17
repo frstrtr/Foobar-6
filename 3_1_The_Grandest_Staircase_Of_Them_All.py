@@ -1,5 +1,4 @@
 """
-/*
 The Grandest Staircase Of Them All
 ==================================
 With her LAMBCHOP doomsday device finished, Commander Lambda is preparing for her debut on the galactic stage - but in order
@@ -51,8 +50,20 @@ Inputs:
 Output:
     (int) 487067745
 Use verify [file] to test your solution and see how it does. When you are finished editing your code, use submit [file] to submit your answer. If your solution passes the test cases, it will be removed from your home folder.
-*/
 """
+
+
+import unittest
+
+
+class TestTheGrandestStaircaseOfThemAll(unittest.TestCase):
+    def test_1(self):
+        test_input = 3
+        self.assertEqual(answer(test_input), 1)
+
+    def test_2(self):
+        test_input = 200
+        self.assertEqual(answer(test_input), 487067745)
 
 
 def answer(n):
@@ -65,21 +76,5 @@ def answer(n):
     return degeneracy[n]
 
 
-for n in xrange(50):
-    print answer(n), ", ",
-# print(answer(3))
-# print(answer(4))
-# print(answer(5))
-# print(answer(6))
-# print(answer(7))
-# print(answer(8))
-# print(answer(9))
-# print(answer(10))
-# print(answer(11))
-# print(answer(12))
-# print(answer(13))
-# print(answer(14))
-# print(answer(15))
-# print(answer(16))
-print
-print(answer(200))
+if __name__ == '__main__':
+    unittest.main()

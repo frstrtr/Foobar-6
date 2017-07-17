@@ -24,6 +24,19 @@ Output:
 """
 
 
+import unittest
+
+
+class TestEnRouteSalute(unittest.TestCase):
+    def test_1(self):
+        test_input = ">----<"
+        self.assertEqual(answer(test_input), 2)
+
+    def test_2(self):
+        test_input = "<<>><"
+        self.assertEqual(answer(test_input), 4)
+
+
 def answer(s):
     salute_sum = 0
     for i, c in enumerate(s):
@@ -32,5 +45,5 @@ def answer(s):
     return salute_sum
 
 
-print(answer(">----<"))
-print(answer("<<>><"))
+if __name__ == '__main__':
+    unittest.main()

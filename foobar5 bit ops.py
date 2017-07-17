@@ -1,36 +1,52 @@
+# def answer(n):
+#     bin_str = bin(int(n))[2:]
+#     count = 0
+#     rev_str = bin_str[::-1]
+#     nodes = set([rev_str])
+#     temp_nodes = set()
+#     is_one = False
+#
+#     while not is_one:
+#         count += 1
+#         nodes |= temp_nodes
+#         for node in nodes:
+#             next_one = rev_str.find("1",1) if rev_str.find("1",1) > 0 else 0
+#             if rev_str[0] == "1":
+#                 if rev_str.count("0",1, next_one) > 0 or rev_str == "11":
+#                     if str(int(rev_str[::-1])-1)[::-1] not in nodes:
+#                         temp_nodes.add(str(int(rev_str[::-1])-1)[::-1])
+#                         #count += 1
+#                 else:
+#                     if str(int(rev_str[::-1])+1)[::-1]:
+#                         temp_nodes.add(str(int(rev_str[::-1]) + 1)[::-1])
+#                         #count += 1
+#             else:
+#                 count += node.count("0",0, next_one)
+#                 temp_nodes.add(rev_str[next_one:])
+#
+#             if node == "1":
+#                 is_one = True
+#     ones = bin_str.count("1")
+#     zeros = bin_str.count("0")
+#     ops = 2 * (ones-1) + zeros
+#     print "n: ", n, " ", "count: ", count, "ops: ", ops
+#     return count
+
+
 def answer(n):
-    bin_str = bin(int(n))[2:]
-    count = 0
-    rev_str = bin_str[::-1]
-    nodes = set([rev_str])
-    temp_nodes = set()
-    is_one = False
+    n = int(n)
+    res = 0
+    while n != 1:
+        if n & 1 == 0:
+            n >>= 1
+        elif n == 3 or ((n + 1) & n) > ((n - 1) & (n - 2)):
+            n -= 1
+        else:
+            n += 1
+        res += 1
+    print res
+    return res
 
-    while not is_one:
-        count += 1
-        nodes |= temp_nodes
-        for node in nodes:
-            next_one = rev_str.find("1",1) if rev_str.find("1",1) > 0 else 0
-            if rev_str[0] == "1":
-                if rev_str.count("0",1, next_one) > 0 or rev_str == "11":
-                    if str(int(rev_str[::-1])-1)[::-1] not in nodes:
-                        temp_nodes.add(str(int(rev_str[::-1])-1)[::-1])
-                        #count += 1
-                else:
-                    if str(int(rev_str[::-1])+1)[::-1]:
-                        temp_nodes.add(str(int(rev_str[::-1]) + 1)[::-1])
-                        #count += 1
-            else:
-                count += node.count("0",0, next_one)
-                temp_nodes.add(rev_str[next_one:])
-
-            if node == "1":
-                is_one = True
-    ones = bin_str.count("1")
-    zeros = bin_str.count("0")
-    ops = 2 * (ones-1) + zeros
-    print("n: ", n, " ", "count: ", count, "ops: ", ops)
-    return count
 
 answer("1")
 answer("2")
@@ -48,5 +64,6 @@ answer("9999999999")
 answer("989898989898989")
 answer("32")
 answer("48112959837082048697")
+answer("12259482965703494204610781891013153650472479491911259721678034663214403236856095381007309082577240242835737946985310896748160893650283601506396550434828565732092353003853481164402171213367113747542549352708881734505194833668541458686632218028256774724313434048168440132799648820402106874653087178384327547049809616644396931676504679420790397390139666686253361987889059872826368363349991169254930497142845185582442412814870051129790462872320724420455956829525")
 answer("719077253944926363091722076315609893447190791576922629093720324630930703222003852530833909289630144084480455519485573430635159075257666489971389722557896497511071573699461941105208878404984376477812331808340023075352602729369851525895652442163308948653402042738345192959788983753918865219341425318496896548864")
 answer("719077253944926363091722076315609893447190791576922629093720324630930703222003852530833909289630144084480455519485573430635159075257666489971389722557896497511071573699461941105208878404984376477812331808340023075352602729369851525895652442163308948653402042738345192959788983753918865219341425318496896548865")

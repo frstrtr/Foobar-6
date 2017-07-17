@@ -25,26 +25,6 @@ Output:
 import unittest
 
 
-def answer(s):
-    CYPHER_DICT = {"a": "z", "b": "y", "c": "x", "d": "w",
-                   "e": "v", "f": "u", "g": "t", "h": "s", "i": "r",
-                   "j": "q", "k": "p", "l": "o", "m": "n", "n": "m",
-                   "o": "l", "p": "k", "q": "j", "r": "i", "s": "h",
-                   "t": "g", "u": "f", "v": "e", "w": "d", "x": "c",
-                   "y": "b", "z": "a"}
-
-    encrypted_str = s
-    decrypted_str = ""
-
-    for c in encrypted_str:
-        if c.islower():
-            decrypted_str += CYPHER_DICT[c]
-        else:
-            decrypted_str += c
-
-    return decrypted_str
-
-
 class TestILoveLanceJanice(unittest.TestCase):
     def test_1(self):
         test_input = "wrw blf hvv ozhg mrtsg'h vkrhlwv?"
@@ -54,5 +34,23 @@ class TestILoveLanceJanice(unittest.TestCase):
         test_input = "Yvzs! I xzm'g yvorvev Lzmxv olhg srh qly zg gsv xlolmb!!"
         self.assertEqual(answer(test_input), "Yeah! I can't believe Lance lost his job at the colony!!")
 
-print(answer("ghdfhg"))
 
+def answer(s):
+    CYPHER_DICT = {"a": "z", "b": "y", "c": "x", "d": "w",
+                   "e": "v", "f": "u", "g": "t", "h": "s", "i": "r",
+                   "j": "q", "k": "p", "l": "o", "m": "n", "n": "m",
+                   "o": "l", "p": "k", "q": "j", "r": "i", "s": "h",
+                   "t": "g", "u": "f", "v": "e", "w": "d", "x": "c",
+                   "y": "b", "z": "a"}
+    encrypted_str = s
+    decrypted_str = ""
+    for c in encrypted_str:
+        if c.islower():
+            decrypted_str += CYPHER_DICT[c]
+        else:
+            decrypted_str += c
+    return decrypted_str
+
+
+if __name__ == '__main__':
+    unittest.main()

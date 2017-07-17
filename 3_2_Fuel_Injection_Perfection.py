@@ -36,90 +36,47 @@ Use verify [file] to test your solution and see how it does. When you are finish
 """
 
 
+import unittest
+
+class TestTheGrandestStaircaseOfThemAll(unittest.TestCase):
+    def test_1(self):
+        test_input = "4"
+        self.assertEqual(answer(test_input), 2)
+
+    def test_2(self):
+        test_input = "15"
+        self.assertEqual(answer(test_input), 5)
+
+    def test_torture(self):
+        test_input = "71907725394492636309172207631560989344719079157692262909372032463093070322200385253083390928963" \
+                     "01440844804555194855734306351590752576664899713897225578964975110715736994619411052088784049843" \
+                     "76477812331808340023075352602729369851525895652442163308948653402042738345192959788983753918865" \
+                     "219341425318496896548865"  # (2^1026) + 1 which is 100 digits long
+        self.assertEqual(answer(test_input), 1027)
+
 
 def answer(n):
-    count = 0
-    nodes = set([int(n)])
-    temp_nodes = set()
-    is_one = 0
-
-
-    if int(n) == 1:
-        return 0
-    if int(n) == 3:
-        return 2
-
-    while not is_one:
-        count += 1
-        nodes |= temp_nodes
-        two_pwr = 0
-        for node in nodes:
-            if not node % 2:
-                if (node // 2**two_pwr) not in nodes:
-                    if node // 2**two_pwr == 1:
-                        is_one = 1
-                        count += two_pwr
-                    temp_nodes.add(node // 2**two_pwr)
-                if (node // 2) not in nodes:
-                    if node // 2 == 1:
-                        is_one = 1
-                    temp_nodes.add(node // 2)
-            if node % 2:
-                plus_cnt = 0
-                minus_cnt = 0
-                for p in range (1, 1027):
-                    if not (node + 1) % 2**p:
-                        plus_cnt += 1
-                    if not (node - 1) % 2**p:
-                        minus_cnt += 1
-                    elif (node - 1) % 2**p:
-                        break
-                    two_pwr = p
-
-                if (node + 1) not in nodes and plus_cnt > minus_cnt:
-                    temp_nodes.add(node+1)
-
-                elif (node - 1) not in nodes and minus_cnt > plus_cnt:
-                        temp_nodes.add(node-1)
-
-    return count
+    """
+    checks for and applies operation leading to most consecutive 0's in bin(n) using property that x&(x-1) replaces
+    leftmost 1 in bin(x) with a 0
+    """
+    n = int(n)
+    cnt = 0
+    while n != 1:
+        if not n & 1:
+            n >>= 1
+        # checks if n+1 will give more consecutive 0's than n-1. Only true when leftmost bits in n are of form "111".
+        # "011" or "001" makes n-1 preferred operation
+        elif (n & (n+1)) <= ((n-1) & (n-2)):
+            n += 1
+        elif n == 3:  # 3 is anomaly and requires hard code
+            n -= 1
+        else:
+            n -= 1
+        cnt += 1
+    return cnt
 
 
 
-
-print(answer(1), end=", ")
-print(answer(2), end=", ")
-print(answer(3), end=", ")
-print(answer(4), end=", ")
-print(answer(5), end=", ")
-print(answer(6), end=", ")
-print(answer(7), end=", ")
-print(answer(8), end=", ")
-print(answer(9), end=", ")
-print(answer(10), end=", ")
-print(answer(11), end=", ")
-print(answer(12), end=", ")
-print(answer(13), end=", ")
-print(answer(14), end=", ")
-print(answer(15), end=", ")
-print(answer(16), end=", ")
-print(answer(17), end=", ")
-print(answer(18), end=", ")
-print(answer(19), end=", ")
-print(answer(20), end=", ")
-print(answer(21), end=", ")
-print(answer(22), end=", ")
-print(answer(23), end=", ")
-print(answer(24), end=", ")
-print(answer(25), end=", ")
-print(answer(26), end=", ")
-print(answer(27), end=", ")
-print(answer(28), end=", ")
-print(answer(29), end=", ")
-print(answer(30), end=", ")
-print(answer(31), end=", ")
-print(answer(32), end=", ")
-print(answer(65), end=", ")
-print(answer(9999999999), end=", ")
-print(answer(48112959837082048697 ), end=", ")
-#print(answer(719077253944926363091722076315609893447190791576922629093720324630930703222003852530833909289630144084480455519485573430635159075257666489971389722557896497511071573699461941105208878404984376477812331808340023075352602729369851525895652442163308948653402042738345192959788983753918865219341425318496896548865))
+if __name__ == '__main__':
+    unittest.main()
