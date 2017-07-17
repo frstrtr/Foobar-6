@@ -129,12 +129,4 @@ class Graph:
         return max_flow
 
 
-graph = Graph([[0, 7, 0, 0], [0, 0, 6, 0], [0, 0, 0, 8], [9, 0, 0, 0]])
-print(graph.FordFulkerson(0,3))
-
-graph2 = Graph([[0, 0, 4, 6, 0, 0], [0, 0, 5, 2, 0, 0], [0, 0, 0, 0, 4, 4], [0, 0, 0, 0, 6, 6], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]])
-print(graph2.FordFulkerson(0, 4))
-print(graph2.FordFulkerson(0, 5))
-print(graph2.FordFulkerson(1, 4))
-print(graph2.FordFulkerson(1, 5))
 

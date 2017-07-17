@@ -49,7 +49,7 @@ import fractions
 from fractions import Fraction
 
 
-class TestTheGrandestStaircaseOfThemAll(unittest.TestCase):
+class TestDoomsdayFuel(unittest.TestCase):
     def test_1(self):
         test_input = [[0, 2, 1, 0, 0],
                       [0, 0, 0, 3, 4],

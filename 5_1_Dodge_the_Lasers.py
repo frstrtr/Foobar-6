@@ -18,47 +18,50 @@
 # so the function would return "19".
 
 # str_n will be a positive integer between 1 and 10^100, inclusive. Since n can be very large (up to 101 digits!), using just sqrt(2) and a loop won't work. Sometimes, it's easier to take a step back and concentrate not on what you have in front of you, but on what you don't.
-# https://oeis.org/search?q=floor%28n*sqrt%282%29%29&sort=&language=&go=Search
-# sqrt(2) upto 100 decimal '1.4142135623730950488016887242096980785696718753769480731766797379907324784621070388503875343276415727'
-# http://math.stackexchange.com/questions/2052179/how-to-find-sum-i-1n-left-lfloor-i-sqrt2-right-rfloor-a001951-a-beatty-s
 """
 
 
+import unittest
+
+
+class TestDodgeTheLasers(unittest.TestCase):
+    def test_1(self):
+        test_input = "5"
+        self.assertEqual(answer(test_input), "19")
+
+    def test_2(self):
+        test_input = "77"
+        self.assertEqual(answer(test_input), "4208")
+
+    def test_torture(self):
+        test_input = "71907725394492636309172207631560989344719079157692262909372032463093070322200385253083390928963" \
+                     "01440844804555194855734306351590752576664899713897225578964975110715736994619411052088784049843" \
+                     "76477812331808340023075352602729369851525895652442163308948653402042738345192959788983753918865" \
+                     "219341425318496896548865"  # (2^1026) + 1 which is 100 digits long
+        self.assertEqual(answer(test_input), "3656251862507334448148179357411972294813205338243570072399608556509885357"
+                                             "2501592156627075023977411067341589424590108494452342577069275381301528664"
+                                             "8713467314724409580700486858456282969735344383354280498317253684972423688"
+                                             "0399137190063559454262133821524826418317800715699648839069268323667413740"
+                                             "3742614331223435935402453035423695823538445283290619837000290506129738885"
+                                             "5837817678284818646327428940940798745085837091696852308958883678563866545"
+                                             "5192211168001061493525287792007324647921921998049795017289928866989976959"
+                                             "3068942778535840280145136631201950415699342212774262487665784007034469384"
+                                             "2275855344226240937331812480075580")
+
+
 def answer(str_n):
-    def int_sqrt(n):
-        xn = 1
-        xn1 = (xn + n / xn) / 2
-        while abs(xn1 - xn) > 1:
-            xn = xn1
-            xn1 = (xn + n / xn) / 2
-        while xn1 * xn1 > n:
-            xn1 -= 1
-        return xn1
-
-    def calc_tot(n):
-        tot = 0
-        while n > 0:
-            print(n)
-            tot += sqrt(2 * n * n)
-            n -= 1
+    # alpha for this Beatty sequence is the sqrt(2). Alpha minus one expressed
+    # as integer due to build up of float error in last program.
+    alpha_min_one = 4142135623730950488016887242096980785696718753769480731766797379907324784621070388503875343276415727
+    n = int(str_n)
+    m = (alpha_min_one * n) // 10 ** 100  # "floors" value (sqrt(2) - 1 * n)
+    tot = 0
+    if n == 0:
         return tot
+    else:
+        tot = n * m + ((n * (n + 1)) / 2) - ((m * (m + 1)) / 2) - int(answer(m))
+        return str(tot)
 
-    def sqrt(num):
-        res = 0
-        bit = 1 << 8  # The second - to - top bit is set: 1 << 30 for 32 bits
 
-        # "bit" starts at the highest power of four <= the argument.
-        while bit > num:
-            bit >>= 2
-        while bit != 0:
-            if num >= res + bit:
-                num -= res + bit
-                res = (res >> 1) + bit
-            else:
-                res >>= 1
-            bit >>= 2
-        return res
-
-    return calc_tot(int(str_n))
-
-print(answer("11111111"))
+if __name__ == '__main__':
+    unittest.main()

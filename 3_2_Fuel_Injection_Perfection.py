@@ -38,7 +38,8 @@ Use verify [file] to test your solution and see how it does. When you are finish
 
 import unittest
 
-class TestTheGrandestStaircaseOfThemAll(unittest.TestCase):
+
+class TestFuelInjectionPerfection(unittest.TestCase):
     def test_1(self):
         test_input = "4"
         self.assertEqual(answer(test_input), 2)
@@ -65,7 +66,7 @@ def answer(n):
     while n != 1:
         if not n & 1:
             n >>= 1
-        # checks if n+1 will give more consecutive 0's than n-1. Only true when leftmost bits in n are of form "111".
+        # checks if n+1 will give more consecutive 0's than n-1. Only true when rightmost bits in n are of form "111".
         # "011" or "001" makes n-1 preferred operation
         elif (n & (n+1)) <= ((n-1) & (n-2)):
             n += 1
@@ -75,7 +76,6 @@ def answer(n):
             n -= 1
         cnt += 1
     return cnt
-
 
 
 if __name__ == '__main__':
