@@ -67,13 +67,13 @@ class TestTheGrandestStaircaseOfThemAll(unittest.TestCase):
 
 
 def answer(n):
-    degeneracy = [0]*(n+1)
-    degeneracy [0] = 1
+    arry = [0]*(n+1)
+    aryy [0] = 1
     for i in range(1, n):
         for c in range (n, i-1, -1):
-            degeneracy[c] += degeneracy[c-i]
+            arry[c] += arry[c-i]
 
-    return degeneracy[n]
+    return arry[n]
 
 
 if __name__ == '__main__':
