@@ -67,13 +67,93 @@ class TestTheGrandestStaircaseOfThemAll(unittest.TestCase):
 
 
 def answer(n):
+    """
+    :param n: Integer to partition into distinct integer sums
+    :return: Number of partitions of at least 2 parts i.e. excluding trivial
+
+    Calculates partitions from 0 to n quickly and in place.
+    """
     arry = [0]*(n+1)
-    aryy [0] = 1
+    arry[0] = 1
     for i in range(1, n):
-        for c in range (n, i-1, -1):
+        for c in range(n, i-1, -1):
             arry[c] += arry[c-i]
 
     return arry[n]
+
+
+def mult_poly(p1, p2):
+    """
+    :param p1: List of coefficients with indices as powers of x. i.e [0] = x^0
+    :param p2: List of coefficients with indices as powers of x. i.e [0] = x^0
+    :return: List of coefficients with indices as powers of x. i.e [0] = x^0
+
+    Multiplies all terms of polynomials p1 and p2
+    """
+    prod = [0]*(len(p1)+len(p2)-1)  # Length is sum of highest degree + 1
+    for deg1, coef1 in enumerate(p1):
+        for deg2, coef2 in enumerate(p2):
+            # Multiplies coefficients and places them in the index related to
+            # the sum of the degrees of x
+            prod[deg1+deg2] += coef1*coef2
+    return prod
+
+
+def partitionQ(n):
+    """
+    :param n: Number to partition into distinct integer sums
+    :return: Number of partitions including trivial partition, n
+
+    Calculates all partitions for all terms of degree 0 to n^2
+    """
+    res = [1]
+    for i in xrange(0, n+1):
+        next_poly = [0] * (i + 1)  # Creates the next (1 + x^i) for product
+        next_poly[0] = 1  # Sets the x^0 coefficient
+        next_poly[i] = 1  # Sets the x^i power coefficient
+        res = mult_poly(res, next_poly)
+    return res[n]
+
+
+def fast_mult_poly(p1, p2, nth_deg):
+    """
+    :param p1: List of coefficients with indices as powers of x. i.e [0] = x^0
+    :param p2: List of coefficients with indices as powers of x. i.e [0] = x^0
+    :param nth_deg: Int of maximum degree to calculate coefficient for
+    :return: List of coefficients with indices as powers of x. i.e [0] = x^0
+
+    Multiplies polynomials p1 and p2 up to terms of degree n
+    """
+    prod = [0] * (nth_deg + 1)
+    for coef1, deg1 in enumerate(p1):
+        for coef2, deg2 in enumerate(p2):
+            if (coef1 + coef2) <= nth_deg:
+                prod[coef1 + coef2] += deg1 * deg2
+            else:
+                break
+    return prod
+
+
+def fast_partitionQ(n):
+    """
+    :param n: Integer to partition into distinct integer sums
+    :return: Number of partitions including trivial partition, n
+
+    Utilizes fast_mult_poly() to calculate partitions from 0 to n quickly
+    """
+    res = [1]
+    for i in xrange(0, n+1):
+        next_poly = [0] * (i + 1)  # Creates the next (1 + x^i) for product
+        next_poly[0] = 1  # Sets the x^0 coefficient
+        next_poly[i] = 1  # Sets the x^i power coefficient
+        res = fast_mult_poly(res, next_poly, n)
+    return res[n]
+
+
+print "Number of distinct partitions of at least two: ", answer(200)
+#print partitionQ(200)  # Too slow to run due to extraneous calculations
+print "Number of distinct partitions: ", fast_partitionQ(200)
+
 
 
 if __name__ == '__main__':
