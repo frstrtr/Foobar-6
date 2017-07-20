@@ -306,3 +306,6 @@ cnt = 0
 for item in vld_grd_sts[max(vld_grd_sts.keys())].values():
     cnt += len(item)
 print cnt
+
+if __name__ == '__main__':
+    unittest.main()
