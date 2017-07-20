@@ -150,8 +150,9 @@ def fast_partitionQ(n):
     return res[n]
 
 
+print mult_poly([1, 1, 1], [1, 1, 1])
 print "Number of distinct partitions of at least two: ", answer(200)
-#print partitionQ(200)  # Too slow to run due to extraneous calculations
+# print partitionQ(30)  # Too slow to run due to extraneous calculations
 print "Number of distinct partitions: ", fast_partitionQ(200)
 
 
