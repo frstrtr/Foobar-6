@@ -161,8 +161,9 @@ def find_valid_grid_states(grid):
 def answer(grid):
     vld_grd_sts = find_valid_grid_states(grid)
     cnt = 0
-    for item in vld_grd_sts[max(vld_grd_sts.keys())].values():
-        cnt += len(item)
+    for item in vld_grd_sts[max(vld_grd_sts.keys())].items():
+        cnt += len(item[-1])
+        print item
     return cnt
 
 
@@ -209,7 +210,7 @@ cell_1 = [[1, 0, 1],
           [0, 1, 0],
           [1, 0, 1]]
 
-cell_2 = [[1, 1]]
+cell_2 = [[1, 1, 1, 1, 1, 1]]
 
 cell_3 = [[0],
           [0],
@@ -249,3 +250,4 @@ test_arry = generate_binary_arry(50, 1)
 
 quarter_grid(cell_5)
 quarter_grid(cell_4)
+print answer(zero_arry)
