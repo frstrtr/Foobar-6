@@ -67,7 +67,8 @@
 """
 import unittest
 import random
-import itertools
+
+STATE_CACHE = {}
 
 
 def transpose(arry):
@@ -90,6 +91,16 @@ def build_grid_states(grid):
                                      ((1, 0),): ((1, 1), (1, 0), (0, 1)),
                                      ((0, 0),): ((1, 1), (0, 0))}
     return state_ary
+
+
+def quarter_grid(grid):
+    state_ary = build_grid_states(grid)
+    if not len(grid) % 2:
+        if not len(grid[0]) % 2:
+            for i in xrange(len(grid)/2):
+                print grid[i][:len(grid[0])/2]
+            print
+
 
 
 def find_valid_col_states(grid):
@@ -126,20 +137,7 @@ def split_col(col):
     return l_r_dict
 
 
-# def compare_cols(col_1, col_2):
-#     col_1_splt = split_col(col_1)
-#     col_2_splt = split_col(col_2)
-#     valid_col_states = {}
-#     for key, value in col_1_splt.items():
-#         for elem in value:  # Checks for all cols of first col
-#             if (elem,) in col_2_splt:  # Checks if right col of 1st col state is same as left col of 2nd col state
-#                 valid_col_states[(key[:] + (elem,))] = col_2_splt[(elem,)]
-#     return valid_col_states
-
-
 def compare_cols(col_1, col_2):
-    # col_1_splt = split_col(col_1)
-    # col_2_splt = split_col(col_2)
     valid_col_states = {}
     for key, value in col_1.items():
         for elem in value:  # Checks for all cols of first col
@@ -149,50 +147,14 @@ def compare_cols(col_1, col_2):
     return valid_col_states
 
 
-# def find_valid_grid_states(grid):
-#     cols_states = find_valid_col_states(grid)
-#     valid_grid_states = {}  # Storage container for valid grids. Starts as split columns
-#     for key, value in cols_states.items():  # Splits all columns and fills valid_grid_states with them
-#         valid_grid_states[key] = split_col(value)
-#     temp_cols = {}  # Temp storage for valid merged cols
-#     for key, value in valid_grid_states.items():
-#         print key, value
-#     if len(valid_grid_states) % 2:
-#         for j in xrange(0, len(valid_grid_states) - 1, 2):
-#             print
-#             print j, valid_grid_states[j]
-#             print j+1, valid_grid_states[j+1]
-#             print
-#     else:
-#         while len(valid_grid_states) > 1:
-#             for j in xrange(0, len(valid_grid_states), 2):
-#                 print
-#                 print j, valid_grid_states[j]
-#                 print j+1, valid_grid_states[j+1]
-#                 print
-#                 temp_cols[j//2] = compare_cols(valid_grid_states[j], valid_grid_states[j+1])  # Cuts cols down by 1/2
-#             valid_grid_states = temp_cols.copy()
-#             temp_cols.clear()
-#     for key, value in valid_grid_states.items():
-#         print key, value
-#     return valid_grid_states
-
-
 def find_valid_grid_states(grid):
     cols_states = find_valid_col_states(grid)
     valid_grid_states = {}  # Storage container for valid grids. Starts as split columns
     for key, value in cols_states.items():  # Splits all columns and fills valid_grid_states with them
         valid_grid_states[key] = split_col(value)
-    temp_cols = {}  # Temp storage for valid merged cols
-    # for key, value in valid_grid_states.items():
-    #     print key, value
+
     for j in xrange(len(valid_grid_states)-1):
         valid_grid_states[j+1] = compare_cols(valid_grid_states[j], valid_grid_states[j+1])  # Cuts cols down by 1/2
-    # valid_grid_states = temp_cols.copy()
-    # temp_cols.clear()
-    # print
-    # for key, value in valid_grid_states.items():
-    #     print key, value
     return valid_grid_states
 
 
@@ -212,8 +174,6 @@ def generate_binary_arry(height, width):
         for j in xrange(width):
             bin_arry[i].append(random.randint(0, 100) % 2)
     return bin_arry
-
-
 
 
 class TestExpandingNebula(unittest.TestCase):
@@ -267,6 +227,12 @@ cell_4 = [[1, 1],
           [1, 1]]
 
 
+cell_5 = [[1, 1, 0, 0],
+          [1, 1, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]]
+
+
 zero_arry = []
 for i in xrange(9):
     zero_arry.append([])
@@ -279,33 +245,7 @@ for i in xrange(9):
     for j in xrange(25):
         one_arry[i].append(1)
 
-test_arry = generate_binary_arry(9, 10)
+test_arry = generate_binary_arry(50, 1)
 
-st_arry = build_grid_states(cell_2)
-st_arry_t = transpose(st_arry)
-
-# for elem in st_arry:
-#     for state in st_arry[elem]:
-#         print "top: ", state, "bottom: ", st_arry[elem][state]
-#     print
-#
-# vld_col_sts = find_valid_col_states(cell_2)
-# print vld_col_sts
-# print
-# for item in vld_col_sts[0].items():
-#         print item[0], "   ---   ", item[1]
-#
-# vld_row_sts = find_valid_row_states(cell_2)
-# cols = compare_cols(vld_col_sts[0], vld_col_sts[1])
-# print
-# for l, r in cols.items():
-#     print "Left: ", l, "   ---   ", "Right: ", r
-# print
-vld_grd_sts = find_valid_grid_states(one_arry)
-cnt = 0
-for item in vld_grd_sts[max(vld_grd_sts.keys())].values():
-    cnt += len(item)
-print cnt
-
-if __name__ == '__main__':
-    unittest.main()
+quarter_grid(cell_5)
+quarter_grid(cell_4)

@@ -193,8 +193,7 @@ def answer(m):
     terminal_states = find_terminals(m)
     q_matrix = build_qr(m, terminal_states)[0]
     r_matrix = build_qr(m, terminal_states)[1]
-    inverse = inverse_matrix(
-        sub_matrices(fill_i_matrix(len(q_matrix)), q_matrix))
+    inverse = inverse_matrix(sub_matrices(fill_i_matrix(len(q_matrix)), q_matrix))
     b_matrix = mult_matrices(inverse, r_matrix)
     lcm_int = 1
     if len(b_matrix) >= 1:
