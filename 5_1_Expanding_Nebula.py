@@ -246,8 +246,8 @@ for i in xrange(9):
     for j in xrange(25):
         one_arry[i].append(1)
 
-test_arry = generate_binary_arry(50, 1)
+test_arry = generate_binary_arry(9, 5)
 
 quarter_grid(cell_5)
 quarter_grid(cell_4)
-print answer(zero_arry)
+print answer(test_arry)
