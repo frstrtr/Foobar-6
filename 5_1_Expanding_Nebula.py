@@ -66,117 +66,6 @@
         (int) 11567
 """
 import unittest
-import random
-import time
-
-STATE_CACHE = {}
-
-
-def transpose(arry):
-    return map(list, zip(*arry))
-
-
-def build_grid_states(grid):
-    """ Takes a grid as a 2D binary array and returns a dictionary of key=(i,j) and value=states to represent the 2x2
-    state at any given location of the original grid."""
-    state_ary = {}
-    for i, row in enumerate(grid):
-        for j, col in enumerate(row):
-            if col == 1:  # Trailing comma to force the tuple of tuple structure for single element cases
-                state_ary[(i, j)] = {((1, 0),): ((0, 0),),
-                                     ((0, 1),): ((0, 0),),
-                                     ((0, 0),): ((1, 0), (0, 1))}
-            else:
-                state_ary[(i, j)] = {((1, 1),): ((1, 1), (1, 0), (0, 1), (0, 0)),
-                                     ((0, 1),): ((1, 1), (0, 1), (1, 0)),
-                                     ((1, 0),): ((1, 1), (1, 0), (0, 1)),
-                                     ((0, 0),): ((1, 1), (0, 0))}
-    return state_ary
-
-
-def quarter_grid(grid):
-    state_ary = build_grid_states(grid)
-    if not len(grid) % 2:
-        if not len(grid[0]) % 2:
-            for i in xrange(len(grid)/2):
-                print grid[i][:len(grid[0])/2]
-            print
-
-
-
-def find_valid_col_states(grid):
-    state_ary = build_grid_states(grid)
-    valid_col_states = {}
-    temp_col_states = {}
-    for j in xrange(len(grid[0])):
-        valid_col_states[j] = state_ary[(0, j)]
-        for i in xrange(len(grid) - 1):
-            for key, value in valid_col_states[j].items():
-                for elem in value:  # Checks for all bottom rows of first state
-                    if (elem,) in state_ary[(i + 1, j)]:  # Checks if bottom row 1st state same as top row of 2nd state
-                        temp_col_states[(key[:] + (elem,))] = state_ary[(i + 1, j)][(elem,)]
-            valid_col_states[j] = temp_col_states
-            temp_col_states = {}
-    return valid_col_states
-
-
-def split_col(col):
-    l_r_dict = {}
-    for key_1, value_1 in col.items():
-        for val_row in value_1:
-            temp_r = ()
-            temp_l = ()
-            for key_row in key_1:
-                temp_r += (key_row[-1],)
-                temp_l += key_row[:-1]
-            temp_r += (val_row[-1],)
-            temp_l += val_row[:-1]
-            if (temp_l,) in l_r_dict:
-                l_r_dict[(temp_l,)] += (temp_r,)
-            else:
-                l_r_dict[(temp_l,)] = (temp_r,)
-    return l_r_dict
-
-
-def compare_cols(col_1, col_2):
-    valid_col_states = {}
-    for key, value in col_1.items():
-        for elem in value:  # Checks for all cols of first col
-            for key_2 in col_2.keys():  # Checks if right col of 1st col state is same as left col of 2nd col state
-                if elem == key_2[0]:
-                    valid_col_states[(key[:] + (elem,) + key_2[1:])] = col_2[key_2]
-    return valid_col_states
-
-
-def find_valid_grid_states(grid):
-    cols_states = find_valid_col_states(grid)
-    valid_grid_states = {}  # Storage container for valid grids. Starts as split columns
-    for key, value in cols_states.items():  # Splits all columns and fills valid_grid_states with them
-        valid_grid_states[key] = split_col(value)
-
-    for j in xrange(len(valid_grid_states)-1):
-        valid_grid_states[j+1] = compare_cols(valid_grid_states[j], valid_grid_states[j+1])  # Cuts cols down by 1/2
-    return valid_grid_states
-
-
-def answer(grid):
-    vld_grd_sts = find_valid_grid_states(grid)
-    cnt = 0
-    for item in vld_grd_sts[max(vld_grd_sts.keys())].items():
-        cnt += len(item[-1])
-        print item
-    return cnt
-
-
-def generate_binary_arry(height, width):
-    random.seed(8675309)
-    random.randint(0, 100)
-    bin_arry = [[] for i in xrange(height)]
-    for i in xrange(height):
-        for j in xrange(width):
-            bin_arry[i].append(random.randint(0, 100) % 2)
-    return bin_arry
-
 
 class TestExpandingNebula(unittest.TestCase):
     def test1(self):
@@ -207,51 +96,106 @@ class TestExpandingNebula(unittest.TestCase):
         self.assertEqual(answer(test_input), 4)
 
 
-cell_1 = [[1, 0, 1],
-          [0, 1, 0],
-          [1, 0, 1]]
+PREV_STATE = {((0, 0), (0, 0)): 0,
+              ((0, 0), (0, 1)): 1,
+              ((0, 0), (1, 0)): 1,
+              ((0, 0), (1, 1)): 0,
+              ((0, 1), (0, 0)): 1,
+              ((0, 1), (0, 1)): 0,
+              ((0, 1), (1, 0)): 0,
+              ((0, 1), (1, 1)): 0,
+              ((1, 0), (0, 0)): 1,
+              ((1, 0), (0, 1)): 0,
+              ((1, 0), (1, 0)): 0,
+              ((1, 0), (1, 1)): 0,
+              ((1, 1), (0, 0)): 0,
+              ((1, 1), (0, 1)): 0,
+              ((1, 1), (1, 0)): 0,
+              ((1, 1), (1, 1)): 0}
+CUR_STATE = {0: (((0, 0), (0, 0)),
+                 ((0, 0), (1, 1)),
+                 ((0, 1), (0, 1)),
+                 ((0, 1), (1, 0)),
+                 ((0, 1), (1, 1)),
+                 ((1, 0), (0, 1)),
+                 ((1, 0), (1, 0)),
+                 ((1, 0), (1, 1)),
+                 ((1, 1), (0, 0)),
+                 ((1, 1), (0, 1)),
+                 ((1, 1), (1, 0)),
+                 ((1, 1), (1, 1))),
+             1: (((1, 0), (0, 0)),
+                 ((0, 1), (0, 0)),
+                 ((0, 0), (1, 0)),
+                 ((0, 0), (0, 1)))}
+COL_CACHE = {}
 
-cell_2 = [[1, 1, 1, 1, 1, 1]]
 
-cell_3 = [[0],
-          [0],
-          [0],
-          [0],
-          [0],
-          [0],
-          [0],
-          [0],
-          [0]]
+def get_col_comb(first, column):
+    x = ((0, 0), (0, 1), (1, 0), (1, 1))
+    count_possibility = []
+    for key in first:
+        nextCol = []
+        for val in x:
+            if PREV_STATE[((key[0], key[1]), val)] == column[0]:
+                nextCol.append(val)
+        for n in xrange(1, len(column)):
+            newCol = []
+            if len(nextCol) == 0:
+                break
+            for col in nextCol:
+                for m in xrange(2):
+                    tempCol = list(col)
+                    if PREV_STATE[((key[n], key[n+1]), (col[n], m))] == column[n]:
+                        tempCol.append(m)
+                        newCol.append(tempCol)
+            nextCol = newCol
+        [count_possibility.append((key, tuple(c))) for c in nextCol]
+    return tuple(count_possibility)
 
 
-
-cell_4 = [[1, 1],
-          [1, 1],
-          [1, 1]]
+def swap_row_col(g):
+    return tuple(zip(*g))
 
 
-cell_5 = [[1, 1, 0, 0],
-          [1, 1, 0, 0],
-          [0, 0, 0, 0],
-          [0, 0, 0, 0]]
+def first_col_int(col):
+    x = ((0, 0), (0, 1), (1, 0), (1, 1))
+    present = CUR_STATE[col[0]]
+    for n in xrange(1, len(col)):
+        new = []
+        for z in present:  # Each prev state for current state
+            for comb in x:  # Every combination of bottom row of prev state
+                #  Retains only combinations yielding next state in column
+                if PREV_STATE[(z[-1], comb)] == col[n]:
+                    new.append(z[:]+(comb,))
+        present = tuple(new)  # Builds column row by row
+    return tuple([swap_row_col(x) for x in present])
 
 
-zero_arry = []
-for i in xrange(9):
-    zero_arry.append([])
-    for j in xrange(20):
-        zero_arry[i].append(0)
+def answer(g):
+    rotation = swap_row_col(g)  # Transposes the grid
+    first = {}
+    right_grids = first_col_int(rotation[0])  # Builds first column of preimages
+    COL_CACHE[rotation[0]] = right_grids
+    for z in right_grids:  # For each valid state in the top grid
+        if z[1] not in first:  # Puts all bottom rows in dict and counts number of instances of each
+            first[z[1]] = 1
+        else:
+            first[z[1]] += 1
+    for n in xrange(1, len(rotation)):
+        second = {}
+        if rotation[n] in COL_CACHE:
+            newGrids = COL_CACHE[rotation[n]]
+        else:
+            newGrids = get_col_comb(first, rotation[n])  # Expands to next col to right in original grid/next down in transpose
+            COL_CACHE[rotation[n]] = newGrids
+        for z in newGrids:  # For each valid state in the bottom grid
+            if z[0] in first:  # Checks for overlap between bottom row of state in 1st and top row of state in 2nd
+                # Gives total number of states leading to particular bottom row of state in 2nd
+                if z[1] in second:
+                    second[z[1]] = first[z[0]] + second[z[1]]
+                else:
+                    second[z[1]] = first[z[0]]
+        first = second
+    return sum(first.itervalues())  # Returns total possibilities yielding all bottom row states in transposed grid
 
-one_arry = []
-for i in xrange(9):
-    one_arry.append([])
-    for j in xrange(25):
-        one_arry[i].append(1)
-
-test_arry = generate_binary_arry(25, 1)
-
-quarter_grid(cell_5)
-quarter_grid(cell_4)
-start = time.time()
-print answer(cell_3)
-print time.time() - start
