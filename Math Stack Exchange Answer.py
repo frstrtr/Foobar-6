@@ -1,6 +1,3 @@
-import random
-import time
-
 PREV_STATE = {((0, 0), (0, 0)): 0,
               ((0, 0), (0, 1)): 1,
               ((0, 0), (1, 0)): 1,
@@ -17,7 +14,6 @@ PREV_STATE = {((0, 0), (0, 0)): 0,
               ((1, 1), (0, 1)): 0,
               ((1, 1), (1, 0)): 0,
               ((1, 1), (1, 1)): 0}
-
 CUR_STATE = {0: (((0, 0), (0, 0)),
                  ((0, 0), (1, 1)),
                  ((0, 1), (0, 1)),
@@ -34,26 +30,18 @@ CUR_STATE = {0: (((0, 0), (0, 0)),
                  ((0, 1), (0, 0)),
                  ((0, 0), (1, 0)),
                  ((0, 0), (0, 1)))}
-
-
-COL_ST_OVLP = {}
-
-
 COL_CACHE = {}
 
 
-def get_col_comb(first,column):
-    x = ((0,0),(0,1),(1,0),(1,1))
+def get_col_comb(first, column):
+    x = ((0, 0), (0, 1), (1, 0), (1, 1))
     count_possibility = []
-
     for key in first:
         nextCol = []
-
         for val in x:
             if PREV_STATE[((key[0], key[1]), val)] == column[0]:
                 nextCol.append(val)
-
-        for n in xrange(1,len(column)):
+        for n in xrange(1, len(column)):
             newCol = []
             if len(nextCol) == 0:
                 break
@@ -64,43 +52,25 @@ def get_col_comb(first,column):
                         tempCol.append(m)
                         newCol.append(tempCol)
             nextCol = newCol
-        [count_possibility.append((key,tuple(c))) for c in nextCol]
+        [count_possibility.append((key, tuple(c))) for c in nextCol]
     return tuple(count_possibility)
 
 
 def swap_row_col(g):
-    """
-    :param g: 2D binary grid
-    :return: Transpose of 2D binary grid
-    """
     return tuple(zip(*g))
 
 
 def first_col_int(col):
     x = ((0, 0), (0, 1), (1, 0), (1, 1))
     present = CUR_STATE[col[0]]
-    cnt = 0
     for n in xrange(1, len(col)):
         new = []
-        if (col[n - 1], col[n]) in COL_ST_OVLP:
-            for z in present:
-                for comb in COL_ST_OVLP[(col[n - 1], col[n])]:
-                    if z[-1] in comb:
-                        new.append(z[:] + (comb,))
         for z in present:  # Each prev state for current state
             for comb in x:  # Every combination of bottom row of prev state
                 #  Retains only combinations yielding next state in column
                 if PREV_STATE[(z[-1], comb)] == col[n]:
                     new.append(z[:]+(comb,))
-                    if (col[n - 1], col[n]) in COL_ST_OVLP:
-                        COL_ST_OVLP[(col[n - 1], col[n])].add(comb)
-                    else:
-                        COL_ST_OVLP[(col[n - 1], col[n])] = {comb}
-                cnt += 1
         present = tuple(new)  # Builds column row by row
-    # print present
-    # print tuple([swap_row_col(x) for x in present])
-    print "Find col states cnt: ", cnt
     return tuple([swap_row_col(x) for x in present])
 
 
@@ -109,15 +79,11 @@ def answer(g):
     first = {}
     right_grids = first_col_int(rotation[0])  # Builds first column of preimages
     COL_CACHE[rotation[0]] = right_grids
-    cnt1 = 0
-    cnt2 = 0
     for z in right_grids:  # For each valid state in the top grid
         if z[1] not in first:  # Puts all bottom rows in dict and counts number of instances of each
             first[z[1]] = 1
         else:
             first[z[1]] += 1
-        cnt1 += 1
-    print "Count col states cnt: ", cnt1
     for n in xrange(1, len(rotation)):
         second = {}
         if rotation[n] in COL_CACHE:
@@ -132,63 +98,6 @@ def answer(g):
                     second[z[1]] = first[z[0]] + second[z[1]]
                 else:
                     second[z[1]] = first[z[0]]
-            cnt2 += 1
         first = second
-    print "Count total states cnt: ", cnt2
     return sum(first.itervalues())  # Returns total possibilities yielding all bottom row states in transposed grid
-
-
-def generate_binary_arry(height, width):
-    random.seed(8675309)
-    random.randint(0, 100)
-    bin_arry = [[] for i in xrange(height)]
-    for i in xrange(height):
-        for j in xrange(width):
-            bin_arry[i].append(random.randint(0, 100) % 2)
-    return bin_arry
-
-
-cell_1 = [[1, 0, 1],
-          [0, 1, 0],
-          [1, 0, 1]]
-
-cell_2 = [[1, 1, 1, 1, 1, 1]]
-
-cell_3 = [[0],
-          [0],
-          [0],
-          [0],
-          [0],
-          [0],
-          [0],
-          [0],
-          [0]]
-
-
-cell_4 = [[1, 1],
-          [1, 1],
-          [1, 1]]
-
-
-
-zero_arry = []
-for i in xrange(1):
-    zero_arry.append([])
-    for j in xrange(50000):
-        zero_arry[i].append(0)
-
-one_arry = []
-for i in xrange(1):
-    one_arry.append([])
-    for j in xrange(50000):
-        one_arry[i].append(1)
-
-test_arry = generate_binary_arry(25, 1)
-
-
-start = time.time()
-print answer(test_arry)
-print len(COL_ST_OVLP)
-# first_col_int(swap_row_col(cell_4)[0])
-print time.time()-start
 
