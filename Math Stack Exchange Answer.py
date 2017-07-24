@@ -1,3 +1,34 @@
+import unittest
+
+class TestExpandingNebula(unittest.TestCase):
+    def test1(self):
+        test_input = [
+                        [True, True, False, True, False, True, False, True, True, False],
+                        [True, True, False, False, False, False, True, True, True, False],
+                        [True, True, False, False, False, False, False, False, False, True],
+                        [False, True, False, False, False, False, True, True, False, False]
+                      ]
+        self.assertEqual(answer(test_input), 11567)
+
+    def test2(self):
+        test_input = [
+                        [True, False, True, False, False, True, True, True],
+                        [True, False, True, False, False, False, True, False],
+                        [True, True, True, False, False, False, True, False],
+                        [True, False, True, False, False, False, True, False],
+                        [True, False, True, False, False, True, True, True]
+                      ]
+        self.assertEqual(answer(test_input), 254)
+
+    def test3(self):
+        test_input = [
+                        [True, False, True],
+                        [False, True, False],
+                        [True, False, True]
+                      ]
+        self.assertEqual(answer(test_input), 4)
+
+
 PREV_STATE = {((0, 0), (0, 0)): 0,
               ((0, 0), (0, 1)): 1,
               ((0, 0), (1, 0)): 1,
@@ -68,14 +99,14 @@ def first_col_int(col):
         for z in present:  # Each prev state for current state
             for comb in x:  # Every combination of bottom row of prev state
                 #  Retains only combinations yielding next state in column
-                if PREV_STATE[(z[-1], comb)] == col[n]:
+                if PREV_STATE[(z[n], comb)] == col[n]:
                     new.append(z[:]+(comb,))
         present = tuple(new)  # Builds column row by row
     return tuple([swap_row_col(x) for x in present])
 
 
 def answer(g):
-    rotation = swap_row_col(g)  # Transposes the grid
+    rotation = swap_row_col(g)
     first = {}
     right_grids = first_col_int(rotation[0])  # Builds first column of preimages
     COL_CACHE[rotation[0]] = right_grids
@@ -89,7 +120,7 @@ def answer(g):
         if rotation[n] in COL_CACHE:
             newGrids = COL_CACHE[rotation[n]]
         else:
-            newGrids = get_col_comb(first, rotation[n])  # Expands to next col to right in original grid/next down in transpose
+            newGrids = first_col_int(rotation[n])  # Expands to next col to right in original grid/next down in transpose
             COL_CACHE[rotation[n]] = newGrids
         for z in newGrids:  # For each valid state in the bottom grid
             if z[0] in first:  # Checks for overlap between bottom row of state in 1st and top row of state in 2nd
@@ -101,3 +132,6 @@ def answer(g):
         first = second
     return sum(first.itervalues())  # Returns total possibilities yielding all bottom row states in transposed grid
 
+
+if __name__ == '__main__':
+    unittest.main()
