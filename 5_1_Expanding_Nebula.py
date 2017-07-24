@@ -67,6 +67,7 @@
 """
 import unittest
 import random
+import time
 
 STATE_CACHE = {}
 
@@ -225,6 +226,7 @@ cell_3 = [[0],
 
 
 cell_4 = [[1, 1],
+          [1, 1],
           [1, 1]]
 
 
@@ -246,8 +248,10 @@ for i in xrange(9):
     for j in xrange(25):
         one_arry[i].append(1)
 
-test_arry = generate_binary_arry(9, 5)
+test_arry = generate_binary_arry(25, 1)
 
 quarter_grid(cell_5)
 quarter_grid(cell_4)
-print answer(test_arry)
+start = time.time()
+print answer(cell_3)
+print time.time() - start

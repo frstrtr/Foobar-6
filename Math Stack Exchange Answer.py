@@ -1,22 +1,43 @@
 import random
 import time
 
-box = {((0, 0), (0, 0)): 0,
-       ((0, 0), (0, 1)): 1,
-       ((0, 0), (1, 0)): 1,
-       ((0, 0), (1, 1)): 0,
-       ((0, 1), (0, 0)): 1,
-       ((0, 1), (0, 1)): 0,
-       ((0, 1), (1, 0)): 0,
-       ((0, 1), (1, 1)): 0,
-       ((1, 0), (0, 0)): 1,
-       ((1, 0), (0, 1)): 0,
-       ((1, 0), (1, 0)): 0,
-       ((1, 0), (1, 1)): 0,
-       ((1, 1), (0, 0)): 0,
-       ((1, 1), (0, 1)): 0,
-       ((1, 1), (1, 0)): 0,
-       ((1, 1), (1, 1)): 0}
+PREV_STATE = {((0, 0), (0, 0)): 0,
+              ((0, 0), (0, 1)): 1,
+              ((0, 0), (1, 0)): 1,
+              ((0, 0), (1, 1)): 0,
+              ((0, 1), (0, 0)): 1,
+              ((0, 1), (0, 1)): 0,
+              ((0, 1), (1, 0)): 0,
+              ((0, 1), (1, 1)): 0,
+              ((1, 0), (0, 0)): 1,
+              ((1, 0), (0, 1)): 0,
+              ((1, 0), (1, 0)): 0,
+              ((1, 0), (1, 1)): 0,
+              ((1, 1), (0, 0)): 0,
+              ((1, 1), (0, 1)): 0,
+              ((1, 1), (1, 0)): 0,
+              ((1, 1), (1, 1)): 0}
+
+CUR_STATE = {0: (((0, 0), (0, 0)),
+                 ((0, 0), (1, 1)),
+                 ((0, 1), (0, 1)),
+                 ((0, 1), (1, 0)),
+                 ((0, 1), (1, 1)),
+                 ((1, 0), (0, 1)),
+                 ((1, 0), (1, 0)),
+                 ((1, 0), (1, 1)),
+                 ((1, 1), (0, 0)),
+                 ((1, 1), (0, 1)),
+                 ((1, 1), (1, 0)),
+                 ((1, 1), (1, 1))),
+             1: (((1, 0), (0, 0)),
+                 ((0, 1), (0, 0)),
+                 ((0, 0), (1, 0)),
+                 ((0, 0), (0, 1)))}
+
+
+COL_ST_OVLP = {}
+
 
 COL_CACHE = {}
 
@@ -29,7 +50,7 @@ def get_col_comb(first,column):
         nextCol = []
 
         for val in x:
-            if box[((key[0],key[1]),val)] == column[0]:
+            if PREV_STATE[((key[0], key[1]), val)] == column[0]:
                 nextCol.append(val)
 
         for n in xrange(1,len(column)):
@@ -39,7 +60,7 @@ def get_col_comb(first,column):
             for col in nextCol:
                 for m in xrange(2):
                     tempCol = list(col)
-                    if box[((key[n],key[n+1]),(col[n],m))] == column[n]:
+                    if PREV_STATE[((key[n], key[n+1]), (col[n], m))] == column[n]:
                         tempCol.append(m)
                         newCol.append(tempCol)
             nextCol = newCol
@@ -48,31 +69,38 @@ def get_col_comb(first,column):
 
 
 def swap_row_col(g):
+    """
+    :param g: 2D binary grid
+    :return: Transpose of 2D binary grid
+    """
     return tuple(zip(*g))
 
 
-def initialize(col):
-    g0 = col[0]
-    l = []
-    for key, val in box.iteritems():
-        if g0 == val:
-            l.append(key)
-    return tuple(l)
-
-
-def first_col_int(f_c_col):
+def first_col_int(col):
     x = ((0, 0), (0, 1), (1, 0), (1, 1))
-    present = initialize(f_c_col)
-    for n in xrange(1, len(f_c_col)):
+    present = CUR_STATE[col[0]]
+    cnt = 0
+    for n in xrange(1, len(col)):
         new = []
+        if (col[n - 1], col[n]) in COL_ST_OVLP:
+            for z in present:
+                for comb in COL_ST_OVLP[(col[n - 1], col[n])]:
+                    if z[-1] in comb:
+                        new.append(z[:] + (comb,))
         for z in present:  # Each prev state for current state
-            for comb in x:
-                possibility = (z[n], comb)
-                if box[possibility] == f_c_col[n]:
-                    temp = list(z)
-                    temp.append(comb)
-                    new.append(temp)
-        present = tuple(new)
+            for comb in x:  # Every combination of bottom row of prev state
+                #  Retains only combinations yielding next state in column
+                if PREV_STATE[(z[-1], comb)] == col[n]:
+                    new.append(z[:]+(comb,))
+                    if (col[n - 1], col[n]) in COL_ST_OVLP:
+                        COL_ST_OVLP[(col[n - 1], col[n])].add(comb)
+                    else:
+                        COL_ST_OVLP[(col[n - 1], col[n])] = {comb}
+                cnt += 1
+        present = tuple(new)  # Builds column row by row
+    # print present
+    # print tuple([swap_row_col(x) for x in present])
+    print "Find col states cnt: ", cnt
     return tuple([swap_row_col(x) for x in present])
 
 
@@ -81,26 +109,32 @@ def answer(g):
     first = {}
     right_grids = first_col_int(rotation[0])  # Builds first column of preimages
     COL_CACHE[rotation[0]] = right_grids
+    cnt1 = 0
+    cnt2 = 0
     for z in right_grids:  # For each valid state in the top grid
         if z[1] not in first:  # Puts all bottom rows in dict and counts number of instances of each
             first[z[1]] = 1
         else:
             first[z[1]] += 1
+        cnt1 += 1
+    print "Count col states cnt: ", cnt1
     for n in xrange(1, len(rotation)):
         second = {}
         if rotation[n] in COL_CACHE:
             newGrids = COL_CACHE[rotation[n]]
         else:
-            newGrids = get_col_comb(first, rotation[n])  # Expands to next col to right
+            newGrids = get_col_comb(first, rotation[n])  # Expands to next col to right in original grid/next down in transpose
             COL_CACHE[rotation[n]] = newGrids
         for z in newGrids:  # For each valid state in the bottom grid
-            if z[0] in first:  # Checks for overlap between bottom row of state in 1st and top row of state in
-                # Gives total number of states leading to particular bottom row of state in second
+            if z[0] in first:  # Checks for overlap between bottom row of state in 1st and top row of state in 2nd
+                # Gives total number of states leading to particular bottom row of state in 2nd
                 if z[1] in second:
                     second[z[1]] = first[z[0]] + second[z[1]]
                 else:
                     second[z[1]] = first[z[0]]
+            cnt2 += 1
         first = second
+    print "Count total states cnt: ", cnt2
     return sum(first.itervalues())  # Returns total possibilities yielding all bottom row states in transposed grid
 
 
@@ -132,41 +166,29 @@ cell_3 = [[0],
 
 
 cell_4 = [[1, 1],
+          [1, 1],
           [1, 1]]
 
 
-cell_5 = [[1, 1, 0, 0],
-          [1, 1, 0, 0],
-          [0, 0, 0, 0],
-          [0, 0, 0, 0]]
-
 
 zero_arry = []
-for i in xrange(9):
+for i in xrange(1):
     zero_arry.append([])
-    for j in xrange(50):
+    for j in xrange(50000):
         zero_arry[i].append(0)
 
 one_arry = []
-for i in xrange(7):
+for i in xrange(1):
     one_arry.append([])
-    for j in xrange(50):
+    for j in xrange(50000):
         one_arry[i].append(1)
 
-test_arry = generate_binary_arry(10, 51)
+test_arry = generate_binary_arry(25, 1)
 
-
-grid = []
-for i in xrange(len(test_arry)-1):
-    grid.append([])
-    for j in xrange(len(test_arry[0])-1):
-        if sum([test_arry[i][j], test_arry[i+1][j], test_arry[i][j+1], test_arry[i+1][j+1]]) == 1:
-            grid[i].append(1)
-        else:
-            grid[i].append(0)
 
 start = time.time()
-print answer(grid)
+print answer(test_arry)
+print len(COL_ST_OVLP)
+# first_col_int(swap_row_col(cell_4)[0])
 print time.time()-start
-# print
-# print len(first_col_int(swap_row_col(test_arry)[0]))
+

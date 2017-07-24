@@ -5,10 +5,10 @@ class Edge:
         self.frm = f
 
     def __str__(self):
-        return str(self.frm) + ":" + str(self.to)
+        return str(self.frm) + ":" + str(self.to) + ", " + str(self.weight)
 
     def __repr__(self):
-        return str(self.frm) + ":" + str(self.to)
+        return str(self.frm) + ":" + str(self.to) + ", " + str(self.weight)
 
     def __hash__(self):
         return hash((self.frm, self.to))
@@ -56,7 +56,7 @@ def build_de_bruijn(kmers):
     graph = {}
     for kmer in kmers:
         node = Node(kmer[:-1], kmer[-1:], kmer)
-        edge = Edge(node.lhs, node.rhs)
+        edge = Edge(node.lhs, node.rhs, kmers[node.label])
         if edge in graph:
             graph[node].append(edge)
         else:
@@ -70,4 +70,37 @@ def build_de_bruijn(kmers):
 print de_bruijn_ify("100010101001010101110101", 3)
 print len("100010101001010101110101")
 print
-print build_de_bruijn({"11", "10", "00", "01"})
+# print build_de_bruijn({((0, 0), (0, 0)),
+#                        ((0, 0), (0, 1)),
+#                        ((0, 0), (1, 0)),
+#                        ((0, 0), (1, 1)),
+#                        ((0, 1), (0, 0)),
+#                        ((0, 1), (0, 1)),
+#                        ((0, 1), (1, 0)),
+#                        ((0, 1), (1, 1)),
+#                        ((1, 0), (0, 0)),
+#                        ((1, 0), (0, 1)),
+#                        ((1, 0), (1, 0)),
+#                        ((1, 0), (1, 1)),
+#                        ((1, 1), (0, 0)),
+#                        ((1, 1), (0, 1)),
+#                        ((1, 1), (1, 0)),
+#                        ((1, 1), (1, 1))})
+
+for value in build_de_bruijn({((0, 0), (0, 0)): 0,
+                              ((0, 0), (0, 1)): 1,
+                              ((0, 0), (1, 0)): 1,
+                              ((0, 0), (1, 1)): 0,
+                              ((0, 1), (0, 0)): 1,
+                              ((0, 1), (0, 1)): 0,
+                              ((0, 1), (1, 0)): 0,
+                              ((0, 1), (1, 1)): 0,
+                              ((1, 0), (0, 0)): 1,
+                              ((1, 0), (0, 1)): 0,
+                              ((1, 0), (1, 0)): 0,
+                              ((1, 0), (1, 1)): 0,
+                              ((1, 1), (0, 0)): 0,
+                              ((1, 1), (0, 1)): 0,
+                              ((1, 1), (1, 0)): 0,
+                              ((1, 1), (1, 1)): 0}).itervalues():
+    print value
