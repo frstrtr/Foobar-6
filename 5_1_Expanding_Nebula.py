@@ -66,7 +66,7 @@
         (int) 11567
 """
 import unittest
-import time
+
 
 class TestExpandingNebula(unittest.TestCase):
     def test1(self):
@@ -136,22 +136,22 @@ def get_col_comb(first, column):
     x = ((0, 0), (0, 1), (1, 0), (1, 1))
     count_possibility = []
     for key in first:
-        nextCol = []
+        next_col = []
         for val in x:
             if PREV_STATE[((key[0], key[1]), val)] == column[0]:
-                nextCol.append(val)
+                next_col.append(val)
         for n in xrange(1, len(column)):
-            newCol = []
-            if len(nextCol) == 0:
+            new_col = []
+            if len(next_col) == 0:
                 break
-            for col in nextCol:
+            for col in next_col:
                 for m in xrange(2):
-                    tempCol = list(col)
+                    temp_col = list(col)
                     if PREV_STATE[((key[n], key[n+1]), (col[n], m))] == column[n]:
-                        tempCol.append(m)
-                        newCol.append(tempCol)
-            nextCol = newCol
-        [count_possibility.append((key, tuple(c))) for c in nextCol]
+                        temp_col.append(m)
+                        new_col.append(temp_col)
+            next_col = new_col
+        [count_possibility.append((key, tuple(c))) for c in next_col]
     return tuple(count_possibility)
 
 
@@ -186,11 +186,11 @@ def answer(g):
     for n in xrange(1, len(rotation)):
         second = {}
         if rotation[n] in COL_CACHE:
-            newGrids = COL_CACHE[rotation[n]]
+            new_grids = COL_CACHE[rotation[n]]
         else:
-            newGrids = first_col_int(rotation[n])  # Expands to next col to right in original grid/next down in transpose
-            COL_CACHE[rotation[n]] = newGrids
-        for z in newGrids:  # For each valid state in the bottom grid
+            new_grids = first_col_int(rotation[n])  # Expands to next col to right in original grid/next down in transpose
+            COL_CACHE[rotation[n]] = new_grids
+        for z in new_grids:  # For each valid state in the bottom grid
             if z[0] in first:  # Checks for overlap between bottom row of state in 1st and top row of state in 2nd
                 # Gives total number of states leading to particular bottom row of state in 2nd
                 if z[1] in second:
