@@ -51,6 +51,29 @@ Inputs:
 Output:
 (int) 16
 """
+import unittest
+
+
+class TestEscapePods(unittest.TestCase):
+    def test_1(self):
+        entrances = [0]
+        exits = [3]
+        path = [[0, 7, 0, 0],
+                [0, 0, 6, 0],
+                [0, 0, 0, 8],
+                [9, 0, 0, 0]]
+        self.assertEqual(answer(entrances, exits, path), 6)
+
+    def test_2(self):
+        entrances = [0, 1]
+        exits = [4, 5]
+        path = [[0, 0, 4, 6, 0, 0],
+                [0, 0, 5, 2, 0, 0],
+                [0, 0, 0, 0, 4, 4],
+                [0, 0, 0, 0, 6, 6],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0]]
+        self.assertEqual(answer(entrances, exits, path), 16)
 
 
 # This class represents a directed graph using adjacency matrix representation
@@ -63,7 +86,7 @@ class Graph:
     '''Returns true if there is a path from source 's' to sink 't' in
     residual graph. Also fills parent[] to store the path '''
 
-    def BFS(self, s, t, parent):
+    def bfs(self, s, t, parent):
 
         # Mark all the vertices as not visited
         visited = [False] * (self.ROW)
@@ -95,22 +118,22 @@ class Graph:
         return True if visited[t] else False
 
     # Returns the maximum flow from s to t in the given graph
-    def FordFulkerson(self, source, sink):
+    def fordfulkerson(self, source, sink):
 
         # This array is filled by BFS and to store path
-        parent = [-1] * (self.ROW)
+        parent = [-1] * self.ROW
 
         max_flow = 0  # There is no flow initially
 
         # Augment the flow while there is path from source to sink
-        while self.BFS(source, sink, parent):
+        while self.bfs(source, sink, parent):
 
             # Find minimum residual capacity of the edges along the
             # path filled by BFS. Or we can say find the maximum flow
             # through the path found.
             path_flow = float("Inf")
             s = sink
-            while (s != source):
+            while s != source:
                 path_flow = min(path_flow, self.graph[parent[s]][s])
                 s = parent[s]
 
@@ -120,13 +143,22 @@ class Graph:
             # update residual capacities of the edges and reverse edges
             # along the path
             v = sink
-            while (v != source):
+            while v != source:
                 u = parent[v]
                 self.graph[u][v] -= path_flow
                 self.graph[v][u] += path_flow
                 v = parent[v]
-
         return max_flow
 
 
+def answer(entrances, exits, path):
+    graph = Graph(path)
+    flow_tot = 0
+    for entrance in entrances:
+        for exit in exits:
+            flow_tot += graph.fordfulkerson(entrance, exit)
+    return flow_tot
 
+
+if __name__ == '__main__':
+    unittest.main()
